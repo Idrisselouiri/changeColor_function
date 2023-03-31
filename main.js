@@ -1,44 +1,99 @@
-let names = ["porsh" , "ferrari" , "lamborghini"];
-let images = ['car3.jpg','car4.jpg','car6.jpg']
-//create container
-const container = document.createElement('div');
-document.body.appendChild(container);
-container.style.width = "95%";
-container.style.minHeight = "100vh";
-container.style.margin = "auto";
-container.style.display = "flex";
-container.style.justifyContent = "center";
-container.style.alignItems = "center";
-container.style.flexWrap = "wrap";
-container.style.border = "1px solid black";
-container.style.backgroundColor = "#333";
-// items container
-function itemsContainer(name , loupImage){
-const items = document.createElement('div');
-items.style.width = "350px";
-items.style.border = "1px solid black";
-items.style.padding = "20px";
-items.style.backgroundColor = "#fff";
-items.style.color = "#000";
-items.style.display = "flex";
-items.style.justifyContent = "center";
-items.style.alignItems = "center";
-items.style.flexWrap = "wrap";
-items.style.flexDirection = "column";
-items.style.margin = "20px 20px";
-items.style.gap = "30px";
-const textItems = document.createElement('h1');
-const image = document.createElement('img');
-image.style.width = "100%"
-// content
-let textNode = document.createTextNode(name);
-image.src = loupImage;
-items.appendChild(textItems);
-items.appendChild(image);
-textItems.appendChild(textNode);
-container.appendChild(items);
+const Inputs = document.querySelector('.inputs')
+const Name = document.getElementById('name');
+const Price = document.getElementById('price');
+const Stock = document.getElementById('stock');
+const Submit = document.getElementById('submit');
+const add = document.getElementById("add");
+let index ;
+let mode = "save";
+const product = [
+{
+    name:'Apple Tab',
+    price:1800,
+    stock:102
+},
+{
+    name:'Dell 1800',
+    price:800,
+    stock:355
+},
+{
+    name:'Mobile Samsang',
+    price:1800,
+    stock:98
 }
-for(let i = 0 ; i <names.length; i++){
-    itemsContainer(names[i] ,images[i])
+]
+
+let dataPro = [];
+if(localStorage.product != null){
+    dataPro = JSON.parse(localStorage.getItem("product"))
+}else{
+    dataPro = []
 }
 
+Submit.onclick = function(){
+    let container = {
+        name : Name.value, 
+        price : Price.value,
+        stock : Stock.value
+    }
+    if(mode == "save"){
+    dataPro.push(container);
+    }else{
+        dataPro[index] = container;
+        Submit.innerHTML = "save";
+        mode = "save";
+    }
+    localStorage.setItem("product" , JSON.stringify(dataPro));
+    showData()
+    deleteValue()
+}
+// delete value
+function deleteValue(){
+    Name.value = "";
+    Price.value = "";
+    Stock.value = "";
+}
+function showData(){
+    let table = "";
+    for(let i = 0; i < dataPro.length; i++){
+        table += `
+    <tr>    
+        <td>${i}</td>
+        <td>${dataPro[i].name}</td>
+        <td>${dataPro[i].price}</td>
+        <td>${dataPro[i].stock}</td>
+        <td><button onclick = "Delete(${i})">delete</button></td>
+        <td><button onclick = "update(${i})">update</button></td>    
+    </tr>
+    `   
+    }
+    document.getElementById('tbody').innerHTML = table;
+}
+showData()
+
+//delete
+
+function Delete(i){
+    dataPro.splice(i,1);
+    localStorage.product = JSON.stringify(dataPro);
+    showData()
+}
+
+// update
+
+function update(i){
+    Submit.style.display = "flex";
+    Name.value = dataPro[i].name;
+    Price.value = dataPro[i].price;
+    Stock.value = dataPro[i].stock;
+    Submit.innerHTML = "update";
+    mode = "update";
+    index = i;
+    Inputs.style.display = " flex"
+}
+
+// add
+add.onclick = function(){
+    Inputs.style.display = "flex";
+}
